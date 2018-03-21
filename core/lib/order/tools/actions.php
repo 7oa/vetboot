@@ -285,7 +285,8 @@ switch ($type) {
         $params = array('name' => $data["name"], 'guid' => $data["guid"]);
         $arResult = $payment->getResult('GetDocumentDetails', $params);
 		//echo "<pre>"; print_r($arResult); echo "</pre>";
-        Template::includeTemplate('detailpayments', $arResult);
+        echo json_encode($arResult);
+//        Template::includeTemplate('detailpayments', $arResult);
         break;
     case 'paymentList':
         $from = date('Y-m-d', strtotime($data["dfrom"]));
@@ -296,6 +297,27 @@ switch ($type) {
         /*if ($docs['Documents'])
             krsort($docs['Documents']);*/
 //        Template::includeTemplate('docs_list', $docs);
+        if($docs["Contracts"]){
+            if (!array_key_exists(0, $docs["Contracts"])){
+                $contarcts[] = $docs["Contracts"];
+                unset($docs["Contracts"]);
+                $docs["Contracts"] = $contarcts;
+            }
+            foreach($docs["Contracts"] as &$arContracts) {
+                if ($arContracts["Documents"]) {
+                    if (!array_key_exists(0, $arContracts["Documents"])){
+                        $documents[] = $arContracts["Documents"];
+                        unset($arContracts["Documents"]);
+                        $arContracts["Documents"] = $documents;
+                    }
+                    foreach ($arContracts["Documents"] as &$arDocs){
+                        if (($arDocs["Name"] == "РеализацияТоваровУслуг") || ($arDocs["Name"] == "ПриходныйКассовыйОрдер") || ($arDocs["Name"] == "ПоступлениеБезналичныхДенежныхСредств") || ($arDocs["Name"] == "ОперацияПоПлатежнойКарте")){
+                            $arDocs["Link"] = true;
+                        }
+                    }
+                }
+            }
+        }
         echo json_encode($docs);
         break;
 }

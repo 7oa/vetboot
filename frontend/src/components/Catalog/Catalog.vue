@@ -77,7 +77,7 @@
                 <div v-if="!catalog">По Вашему запросу ничего не найдено</div>
 
                 <!--detail card-->
-                <b-modal ref="myModalRef" hide-footer title="Карточка товара">
+                <b-modal ref="detailItem" hide-footer title="Карточка товара">
                     <div class="loading" v-if="detail.length==0"></div>
                     <div class="d-block" v-else>
                         <h4>{{detail.name}}</h4>
@@ -115,7 +115,6 @@
 </template>
 
 <script>
-//    import axios from 'axios'
     import CatalogMenu from './CatalogMenu.vue'
 
     export default {
@@ -211,7 +210,7 @@
             },
             showDetail(id){
                 this.detail = [];
-                this.$refs.myModalRef.show();
+                this.$refs.detailItem.show();
                 this.$http({
                     method: 'post',
                     url: '/ajax/catalog.php',

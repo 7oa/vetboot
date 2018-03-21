@@ -143,3 +143,16 @@
 .select-date{
     margin-bottom: 40px;
 }
+.is-link{
+    text-decoration: underline;
+    cursor: pointer;
+}
+.art{
+    padding-left: 10px;
+}
+.payment-detail-info{
+    margin-bottom: 20px;
+}
+.detail-table{
+    font-size: 14px;
+}
