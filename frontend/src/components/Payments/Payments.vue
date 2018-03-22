@@ -94,14 +94,14 @@
                         <tr>
                             <template v-if="detailPayment.name=='РеализацияТоваровУслуг'">
                                 <th>Название</th>
-                                <th>Количество</th>
-                                <th width="100">Цена</th>
-                                <th>Скидка</th>
+                                <th class="text-right">Количество</th>
+                                <th class="text-right" width="100">Цена</th>
+                                <th class="text-right">Скидка</th>
                             </template>
                             <template v-if="detailPayment.name!='РеализацияТоваровУслуг'">
                                 <th>Основание платежа</th>
                             </template>
-                            <th width="100">Сумма</th>
+                            <th class="text-right" width="100">Сумма</th>
                         </tr>
                         <template v-for="string in detailPayment.strings">
                             <template v-if="detailPayment.name=='РеализацияТоваровУслуг'">
@@ -127,6 +127,22 @@
                     </table>
                 </div>
                 <strong>Сумма:</strong> {{detailPayment.sum | formatPrice}} <br/><br/>
+                <template v-if="detailPayment.Protected!=1">
+
+                    <button type="button" class="btn btn-primary paymentsPrint"
+                        v-if="detailPayment.name=='РеализацияТоваровУслуг'"
+                        @click="showPdf('torg12',detailPayment)"
+                    >
+                        <span class="glyphicon glyphicon-print" aria-hidden="true"></span> ТОРГ-12
+                    </button>
+
+                    <button type="button" class="btn btn-primary paymentsPrint"
+                        v-if="(detailPayment.name=='РеализацияТоваровУслуг')&&(detailPayment.sf)"
+                        @click="showPdf('sf',detailPayment)"
+                    >
+                        <span class="glyphicon glyphicon-print" aria-hidden="true"></span> Счет-фактура
+                    </button>
+                </template>
             </div>
         </b-modal>
 
@@ -138,6 +154,7 @@
 
     let now = new Date();
     let monthAgo = new Date(new Date().setMonth(now.getMonth() - 30));
+    let win = window.open("/load.html");
 
     export default {
         data () {
@@ -188,6 +205,23 @@
                         this.detailPayment = response.data;
                         console.log(response);
                     })
+            },
+            showPdf(type,item){
+                this.$http({
+                    method: 'post',
+                    url: '/ajax/orderActions.php',
+                    data: {
+                        TYPE: 'docPrint',
+                        name: item.name,
+                        guid: item.GUID,
+                        type: type
+                    }
+                })
+                    .then(response => {
+                        console.log(response);
+                        win.document.location = response.data;
+                    })
+
             }
         },
         filters:{

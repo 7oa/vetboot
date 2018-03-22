@@ -145,7 +145,8 @@ switch ($type) {
                 }
             }
         }
-        Template::includeTemplate('order_list', $list);
+        echo json_encode($list);
+//        Template::includeTemplate('order_list', $list);
         break;
     case 'detail':
         $guid = $data["guid"];
