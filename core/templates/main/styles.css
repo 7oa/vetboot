@@ -156,3 +156,19 @@
 .detail-table{
     font-size: 14px;
 }
+.loaderSmall{
+    float: right;
+    margin-left: 10px;
+    width: 20px;
+    height: 20px;
+    background: url('images/loader_small.gif') no-repeat;
+}
+.print-dd i{
+    vertical-align: top;
+}
+.print-dd .loaderSmall{
+    float: none;
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin-left: 0;
+}

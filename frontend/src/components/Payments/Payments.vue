@@ -23,13 +23,14 @@
                         input-class="mb-4 mr-sm-2 mb-sm-0">
                 </datepicker>
 
-                <b-button size="m" variant="info" @click="showPayments">
+                <b-button size="m" variant="info" @click="showPayments" :disabled="loading">
                     Сформировать
                 </b-button>
             </b-form>
         </div>
 
         <div class="loading" v-if="loading"></div>
+        <div v-if="!loading&&!payments">Выберите период.</div>
         <div v-if="payments">
             <div><strong>Сальдо конечное: {{payments.ClosingBalance | formatPrice}}</strong></div><br/>
             <table class="table table-bordered allTable">
@@ -43,23 +44,26 @@
                 <tbody>
                     <template v-for="paymentGroup in payments.Contracts">
                         <tr>
-                            <td colspan="2" style="border-top-width: 3px;"><h3>{{paymentGroup.Contract_name}}</h3></td>
-                            <td style="border-top-width: 3px;">
+                            <td colspan="2"><h3>{{paymentGroup.Contract_name}}</h3></td>
+                            <td>
                                 <b>Сальдо начальное:</b><br>
                                 {{paymentGroup.BeginningBalance | formatPrice}}
                             </td>
                         </tr>
                         <tr v-for="payment in paymentGroup.Documents">
                             <td>
-                                <span v-if="payment.Link" class="is-link text-info" @click="showDetail(payment)">{{payment.Representation}}</span>
+                                <span v-if="payment.Link" class="is-link text-info"
+                                      @click="showDetail(payment)">
+                                    {{payment.Representation}}
+                                </span>
                                 <span v-else>{{payment.Representation}}</span>
                             </td>
                             <td class="text-right">{{payment.SumIn | formatPrice}}</td>
                             <td class="text-right">{{payment.SumOut | formatPrice}}</td>
                         </tr>
                         <tr>
-                            <td colspan="2"  style="border-bottom-width: 3px;"></td>
-                            <td style="border-bottom-width: 3px;">
+                            <td colspan="2"></td>
+                            <td>
                                 <b>Сальдо конечное:</b><br>
                                 {{paymentGroup.ClosingBalance | formatPrice}}
                             </td>
@@ -75,6 +79,31 @@
         <b-modal ref="detailPayments" size="lg" hide-footer :title="detailPayment.representation">
             <div class="loading" v-if="!detailPayment"></div>
             <div class="d-block" v-else>
+                <div class="d-flex justify-content-end" v-if="detailPayment.name=='РеализацияТоваровУслуг'">
+                    <b-dropdown right variant="primary" :disabled="loadingDoc">
+
+                        <span class="print-dd" slot="text">
+                            <i class="material-icons" v-if="!loadingDoc">print</i>
+                            <span class="loaderSmall" v-if="loadingDoc"></span>
+                            <span>Печать</span>
+                        </span>
+
+                        <b-dropdown-item
+                            v-if="detailPayment.name=='РеализацияТоваровУслуг'"
+                            @click="showPdf('torg12',detailPayment)"
+                        >
+                            ТОРГ-12
+                        </b-dropdown-item>
+
+                        <b-dropdown-item
+                            v-if="(detailPayment.name=='РеализацияТоваровУслуг')&&(detailPayment.sf)"
+                            @click="showPdf('sf',detailPayment)"
+                        >
+                            Счет-фактура
+                        </b-dropdown-item>
+
+                    </b-dropdown>
+                </div>
                 <div class="payment-detail-info">
                     <div><strong>Номер:</strong> {{detailPayment.number}} от {{detailPayment.date}}</div>
                     <template v-if="detailPayment.Protected!=1">
@@ -127,22 +156,7 @@
                     </table>
                 </div>
                 <strong>Сумма:</strong> {{detailPayment.sum | formatPrice}} <br/><br/>
-                <template v-if="detailPayment.Protected!=1">
 
-                    <button type="button" class="btn btn-primary paymentsPrint"
-                        v-if="detailPayment.name=='РеализацияТоваровУслуг'"
-                        @click="showPdf('torg12',detailPayment)"
-                    >
-                        <span class="glyphicon glyphicon-print" aria-hidden="true"></span> ТОРГ-12
-                    </button>
-
-                    <button type="button" class="btn btn-primary paymentsPrint"
-                        v-if="(detailPayment.name=='РеализацияТоваровУслуг')&&(detailPayment.sf)"
-                        @click="showPdf('sf',detailPayment)"
-                    >
-                        <span class="glyphicon glyphicon-print" aria-hidden="true"></span> Счет-фактура
-                    </button>
-                </template>
             </div>
         </b-modal>
 
@@ -154,12 +168,13 @@
 
     let now = new Date();
     let monthAgo = new Date(new Date().setMonth(now.getMonth() - 30));
-    let win = window.open("/load.html");
+    //let win = window.open("/load.html");
 
     export default {
         data () {
             return {
                 loading: false,
+                loadingDoc: false,
                 dateFrom: monthAgo,
                 dateTo: now,
                 format: "dd.MM.yyyy",
@@ -207,6 +222,7 @@
                     })
             },
             showPdf(type,item){
+                this.loadingDoc = true,
                 this.$http({
                     method: 'post',
                     url: '/ajax/orderActions.php',
@@ -218,10 +234,9 @@
                     }
                 })
                     .then(response => {
-                        console.log(response);
-                        win.document.location = response.data;
+                        window.open(response.data);
+                        this.loadingDoc = false;
                     })
-
             }
         },
         filters:{

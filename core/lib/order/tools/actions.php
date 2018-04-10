@@ -145,7 +145,9 @@ switch ($type) {
                 }
             }
         }
-        echo json_encode($list);
+        $ordersList['orders']=$list;
+        $ordersList['count']=count($list);
+        echo json_encode($ordersList);
 //        Template::includeTemplate('order_list', $list);
         break;
     case 'detail':
@@ -182,8 +184,15 @@ switch ($type) {
                 $oneProduct['favorits'] = $check_favorits['TYPE'];
         }
 		$detail["guid"] = $guid;
+        if (!array_key_exists(0, $detail["DOCS"]))
+            $docsList[] = $detail["DOCS"];
+        else
+            $docsList = $detail["DOCS"];
 		//echo "<pre>"; print_r($detail); echo "</pre>";
-        Template::includeTemplate('order_detail', $detail);
+        unset($detail["DOCS"]);
+        $detail["DOCS"] = $docsList;
+        echo json_encode($detail);
+        //Template::includeTemplate('order_detail', $detail);
         break;
     case 'repeate':
         $detail = $order->getResult('GetOrder', $orderParams);
@@ -271,14 +280,14 @@ switch ($type) {
         //$data["frm"] = '"paymentInvoice';
         $params = array('number' => $data["number"], 'date' => date('Y-m-d', strtotime($data["date"])), 'type' => $data["frm"]);
         $print = $order->getResult('printOrder', $params, true);
-        $url = $order->checkPDF($print, $data["number"]);
+        $url = $order->checkPDF($print, $data["frm"].'_'.$data["number"]);
         echo $url;
         //echo "/{$order->docFolder}/$print";
         break;
     case 'docPrint':
         $params = array('name' => $data["name"], 'guid' => $data["guid"], 'type' => $data["type"]);
         $print = $payment->getResult('PrintDocument', $params, true);
-        $url = $payment->checkPDF($print, $data["guid"]);
+        $url = $payment->checkPDF($print, $data["type"].'_'.$data["guid"]);
         echo $url;
         //echo "/{$order->docFolder}/$print";
         break;
