@@ -13,6 +13,8 @@
 </template>
 
 <script>
+    let catalogActions = '/ajax/catalog.php';
+
     export default {
         props: ["name","id"],
         data () {
@@ -28,18 +30,13 @@
                 this.sectionOpen = !this.sectionOpen;
                 if(this.sectionOpen&&this.childSecitons.length==0){
                     this.loading = true;
-                    this.$http({
-                        method: 'post',
-                        url: '/ajax/catalog.php',
-                        data: {
-                            id: this.id,
-                            TYPE: 'section'
-                        }
+                    this.$http.post(catalogActions,{
+                        id: this.id,
+                        TYPE: 'section'
                     })
                         .then(response => {
                             this.childSecitons = response.data;
                             this.loading = false;
-                            console.log(response);
                         })
                 }
             },

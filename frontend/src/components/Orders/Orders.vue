@@ -143,6 +143,7 @@
 
     let now = new Date();
     let monthAgo = new Date(new Date().setMonth(now.getMonth() - 30));
+    let orderActions = '/ajax/orderActions.php';
 
     export default {
         data () {
@@ -164,14 +165,10 @@
             showOrders(){
                 this.orders = false;
                 this.loading = true;
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/orderActions.php',
-                    data: {
-                        TYPE: 'list',
-                        dfrom: this.dateFrom,
-                        dto: this.dateTo
-                    }
+                this.$http.post(orderActions,{
+                    TYPE: 'list',
+                    dfrom: this.dateFrom,
+                    dto: this.dateTo
                 })
                     .then(response => {
                         this.orders = response.data;
@@ -181,15 +178,11 @@
             showDetail(order){
                 this.detailOrder = false;
                 this.$refs.detailOrders.show();
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/orderActions.php',
-                    data: {
-                        TYPE: 'detail',
-                        number: order.number,
-                        date: order.date,
-                        guid: order.guid
-                    }
+                this.$http.post(orderActions,{
+                    TYPE: 'detail',
+                    number: order.number,
+                    date: order.date,
+                    guid: order.guid
                 })
                     .then(response => {
                         this.detailOrder = response.data;
@@ -197,15 +190,11 @@
             },
             showPdf(type,item){
                 this.loadingDoc = false,
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/orderActions.php',
-                    data: {
-                        TYPE: 'orderPrint',
-                        number: item.number,
-                        date: item.date,
-                        frm: type
-                    }
+                this.$http.post(orderActions,{
+                    TYPE: 'orderPrint',
+                    number: item.number,
+                    date: item.date,
+                    frm: type
                 })
                     .then(response => {
                         window.open(response.data);

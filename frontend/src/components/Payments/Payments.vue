@@ -168,7 +168,7 @@
 
     let now = new Date();
     let monthAgo = new Date(new Date().setMonth(now.getMonth() - 30));
-    //let win = window.open("/load.html");
+    let orderActions = '/ajax/orderActions.php';
 
     export default {
         data () {
@@ -190,14 +190,10 @@
             showPayments(){
                 this.payments = false;
                 this.loading = true;
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/orderActions.php',
-                    data: {
-                        TYPE: 'paymentList',
-                        dfrom: this.dateFrom,
-                        dto: this.dateTo
-                    }
+                this.$http.post(orderActions,{
+                    TYPE: 'paymentList',
+                    dfrom: this.dateFrom,
+                    dto: this.dateTo
                 })
                     .then(response => {
                         this.payments = response.data;
@@ -207,14 +203,10 @@
             showDetail(payment){
                 this.detailPayment = false;
                 this.$refs.detailPayments.show();
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/orderActions.php',
-                    data: {
-                        TYPE: 'detailPayment',
-                        name: payment.Name,
-                        guid: payment.GUID
-                    }
+                this.$http.post(orderActions,{
+                    TYPE: 'detailPayment',
+                    name: payment.Name,
+                    guid: payment.GUID
                 })
                     .then(response => {
                         this.detailPayment = response.data;
@@ -222,16 +214,12 @@
                     })
             },
             showPdf(type,item){
-                this.loadingDoc = true,
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/orderActions.php',
-                    data: {
-                        TYPE: 'docPrint',
-                        name: item.name,
-                        guid: item.GUID,
-                        type: type
-                    }
+                this.loadingDoc = true;
+                this.$http.post(orderActions,{
+                    TYPE: 'docPrint',
+                    name: item.name,
+                    guid: item.GUID,
+                    type: type
                 })
                     .then(response => {
                         window.open(response.data);

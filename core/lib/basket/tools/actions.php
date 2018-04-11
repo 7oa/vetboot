@@ -27,8 +27,9 @@ switch ($data['TYPE']) {
         break;
     case 'add':
         $result = Basket::addItemByProduct($product);
-//        $basket = Basket::getInstance(false);
-//        Template::includeTemplate('basket_items', $basket);
+        $basket = Basket::getInstance(false);
+        $arBacket = $basket->getBasketItems();
+        echo json_encode($arBacket);
         break;
     case 'update':
         $result = Basket::update($_POST["basketid"], $product);

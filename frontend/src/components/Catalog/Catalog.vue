@@ -67,7 +67,7 @@
                         <b-input-group size="sm">
                             <b-form-input></b-form-input>
                             <b-input-group-append>
-                                <b-btn variant="info" @click="addToCart(data.item)">
+                                <b-btn variant="info" @click="addToBasket(data.item)">
                                     <i class="material-icons">shopping_cart</i>
                                 </b-btn>
                             </b-input-group-append>
@@ -116,6 +116,9 @@
 
 <script>
     import CatalogMenu from './CatalogMenu.vue'
+    import Service from '../../service.js'
+
+    let catalogActions = '/ajax/catalog.php';
 
     export default {
         data () {
@@ -153,18 +156,14 @@
                     this.loading = true;
                     this.brandsList = [];
                     this.catalog = [];
-                    this.$http({
-                        method: 'post',
-                        url: '/ajax/catalog.php',
-                        data: {
-                            TYPE: 'allBrends',
-                            id: ''
-                        }
+                    this.$http.post('/ajax/catalog.php',{
+                        TYPE: 'allBrends',
+                        id: ''
                     })
-                        .then(response => {
-                            this.brandsAlphabet = response.data;
-                            this.loading = false;
-                        })
+                    .then(response => {
+                        this.brandsAlphabet = response.data;
+                        this.loading = false;
+                    })
                 }
             },
             showBrendsList(id,alpha=''){
@@ -172,14 +171,10 @@
                 this.brandsList = [];
                 if(alpha=='') this.brandsAlphabet = [];
                 this.catalog = [];
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/catalog.php',
-                    data: {
-                        TYPE: 'allBrends',
-                        id: id,
-                        letter: alpha
-                    }
+                this.$http.post('/ajax/catalog.php',{
+                    TYPE: 'allBrends',
+                    id: id,
+                    letter: alpha
                 })
                     .then(response => {
                         this.brandsList = response.data;
@@ -190,18 +185,14 @@
                 this.loading = true;
                 this.catalog = [];
 
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/catalog.php',
-                    data: {
-                        TYPE: 'list_sort',
-                        id: '',
-                        brand: brand,
-                        sort: this.sortKey,
-                        start: this.startKey,
-                        amount: this.amountKey,
-                        checked: 'N'
-                    }
+                this.$http.post(catalogActions,{
+                    TYPE: 'list_sort',
+                    id: '',
+                    brand: brand,
+                    sort: this.sortKey,
+                    start: this.startKey,
+                    amount: this.amountKey,
+                    checked: 'N'
                 })
                     .then(response => {
                         this.catalog = response.data.ITEMS;
@@ -211,46 +202,22 @@
             showDetail(id){
                 this.detail = [];
                 this.$refs.detailItem.show();
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/catalog.php',
-                    data: {
-                        TYPE: 'detail',
-                        id: id
-                    }
+                this.$http.post(catalogActions,{
+                    TYPE: 'detail',
+                    id: id
                 })
                     .then(response => {
                         this.detail = response.data;
                     })
             },
-            addToCart(item){
-                console.log(item);
-                this.$http({
-                    method: 'post',
-                    url: '/ajax/basketActions.php',
-                    data: {
-                        TYPE: 'add',
-                        id: item.id,
-                        cnt: '1',
-                        name: item.name,
-                        price: item.price,
-                        art: item.art
-                    }
-                })
-                    .then(response => {
-//                        this.basket = response.data;
-                        console.log(response);
-                    })
+            addToBasket(item){
+                Service.addToBasket(item);
             }
         },
         created(){
-            this.$http({
-                method: 'post',
-                url: '/ajax/catalog.php',
-                data: {
-                    TYPE: 'section',
-                    id: ''
-                }
+            this.$http.post(catalogActions,{
+                TYPE: 'section',
+                id: ''
             })
                 .then(response => {
                     this.rootSecitons = response.data;
