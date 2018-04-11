@@ -143,7 +143,7 @@
 
     let now = new Date();
     let monthAgo = new Date(new Date().setMonth(now.getMonth() - 30));
-    let orderActions = '/ajax/orderActions.php';
+    const orderActions = '/ajax/orderActions.php';
 
     export default {
         data () {

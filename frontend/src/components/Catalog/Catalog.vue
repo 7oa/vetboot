@@ -118,7 +118,7 @@
     import CatalogMenu from './CatalogMenu.vue'
     import Service from '../../service.js'
 
-    let catalogActions = '/ajax/catalog.php';
+    const catalogActions = '/ajax/catalog.php';
 
     export default {
         data () {

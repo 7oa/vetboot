@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    let catalogActions = '/ajax/catalog.php';
+    const catalogActions = '/ajax/catalog.php';
 
     export default {
         props: ["name","id"],

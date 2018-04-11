@@ -2,7 +2,7 @@ import Vue from 'vue'
 import axios from 'axios'
 Vue.prototype.$http = axios;
 
-let basketActions = '/ajax/basketActions.php';
+const basketActions = '/ajax/basketActions.php';
 
 export default new Vue({
     data: {
