@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import axios from 'axios'
+
 Vue.prototype.$http = axios;
 
 const basketActions = '/ajax/basketActions.php';
 
 export default new Vue({
     data: {
-        basket: []
+        basket: [],
+        showLoading: false
     },
     created(){
         this.$http.post(basketActions,{
@@ -18,6 +20,9 @@ export default new Vue({
         })
     },
     methods:{
+        loading(params){
+            this.showLoading = params;
+        },
         addToBasket(item){
             console.log(item.price);
             this.$http.post(basketActions,{
@@ -33,8 +38,14 @@ export default new Vue({
                 this.$emit("addToBasket",response.data);
             })
         },
-        // removeFromBasket(){
-        //     this.$emit("removeFromBasket");
-        // }
+        removeFromBasket(itemID){
+            this.$http.post(basketActions,{
+                TYPE: 'delete',
+                id: itemID
+            })
+                .then(response => {
+                    this.$emit("removeFromBasket");
+                })
+        }
     }
 });

@@ -22,14 +22,14 @@ $product = array(
 switch ($data['TYPE']) {
     case 'show':
         $basket = Basket::getInstance(false);
-        $arBacket = $basket->getBasketItems();
-        echo json_encode($arBacket);
+        $arBasket = $basket->getBasketItems();
+        echo json_encode($arBasket);
         break;
     case 'add':
         $result = Basket::addItemByProduct($product);
         $basket = Basket::getInstance(false);
-        $arBacket = $basket->getBasketItems();
-        echo json_encode($arBacket);
+        $arBasket = $basket->getBasketItems();
+        echo json_encode($arBasket);
         break;
     case 'update':
         $result = Basket::update($_POST["basketid"], $product);

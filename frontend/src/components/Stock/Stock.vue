@@ -1,6 +1,8 @@
 <template>
-    <div>
-        <h1>Акции</h1>
+    <div class="page stock">
+        <div class="page-ttl">
+            <h1>Акции</h1>
+        </div>
     </div>
 </template>
 

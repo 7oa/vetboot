@@ -29,8 +29,7 @@
             </b-form>
         </div>
 
-        <div class="loading" v-if="loading"></div>
-        <div v-if="!loading&&!payments">Выберите период.</div>
+        <div v-if="!payments">Выберите период.</div>
         <div v-if="payments">
             <div><strong>Сальдо конечное: {{payments.ClosingBalance | formatPrice}}</strong></div><br/>
             <table class="table table-bordered allTable">
@@ -77,8 +76,7 @@
 
         <!--detail card-->
         <b-modal ref="detailPayments" size="lg" hide-footer :title="detailPayment.representation">
-            <div class="loading" v-if="!detailPayment"></div>
-            <div class="d-block" v-else>
+            <div class="d-block" v-if="detailPayment">
                 <div class="d-flex justify-content-end" v-if="detailPayment.name=='РеализацияТоваровУслуг'">
                     <b-dropdown right variant="primary" :disabled="loadingDoc">
 
@@ -165,6 +163,7 @@
 
 <script>
     import Datepicker from 'vuejs-datepicker';
+    import Service from '../../service.js'
 
     let now = new Date();
     let monthAgo = new Date(new Date().setMonth(now.getMonth() - 30));
@@ -173,7 +172,6 @@
     export default {
         data () {
             return {
-                loading: false,
                 loadingDoc: false,
                 dateFrom: monthAgo,
                 dateTo: now,
@@ -189,7 +187,7 @@
         methods: {
             showPayments(){
                 this.payments = false;
-                this.loading = true;
+                Service.loading(true);
                 this.$http.post(orderActions,{
                     TYPE: 'paymentList',
                     dfrom: this.dateFrom,
@@ -197,7 +195,7 @@
                 })
                     .then(response => {
                         this.payments = response.data;
-                        this.loading = false;
+                        Service.loading(false);
                     })
             },
             showDetail(payment){

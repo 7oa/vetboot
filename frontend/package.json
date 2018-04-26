@@ -12,6 +12,7 @@
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.1",
     "vue": "^2.0.1",
+    "vue-full-loading": "^1.2.0",
     "vue-router": "^3.0.1",
     "vuejs-datepicker": "^0.9.29",
     "vuetify": "^1.0.4"

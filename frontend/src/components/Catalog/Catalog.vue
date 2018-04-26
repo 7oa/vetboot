@@ -1,7 +1,6 @@
 <template>
     <div class="page catalog">
         <b-row>
-
             <b-col cols="3">
 
                 <!--all-brends-link-->
@@ -55,7 +54,7 @@
 
                 </div>
 
-                <div class="loading" v-if="loading"></div>
+
 
                 <b-table v-if="catalog.length>0" striped bordered outlined small :items="catalog" :fields="fields">
                     <template slot="name" slot-scope="data">
@@ -65,7 +64,12 @@
                     </template>
                     <template slot="order" slot-scope="data">
                         <b-input-group size="sm">
-                            <b-form-input></b-form-input>
+                            <b-form-input
+                                    type="number"
+                                    min="0" step="1"
+                                    :value="data.item.quantity">
+
+                            </b-form-input>
                             <b-input-group-append>
                                 <b-btn variant="info" @click="addToBasket(data.item)">
                                     <i class="material-icons">shopping_cart</i>
@@ -78,8 +82,8 @@
 
                 <!--detail card-->
                 <b-modal ref="detailItem" hide-footer title="Карточка товара">
-                    <div class="loading" v-if="detail.length==0"></div>
-                    <div class="d-block" v-else>
+
+                    <div class="d-block" v-if="detail.length>0">
                         <h4>{{detail.name}}</h4>
                         <img v-if="detail.img" :src="detail.img">
                         <div class="catalog-detail__description">
@@ -134,7 +138,6 @@
                     price: {label: 'Цена', sortable: true},
                     order: {label: 'Заказ', sortable: false, class: 'catalog-order-col'},
                 },
-                loading: false,
                 catalogKey: '',
                 sortKey: 'name',
                 startKey: '0',
@@ -150,10 +153,22 @@
         components:{
             CatalogMenu
         },
+        created(){
+            Service.loading(true);
+            this.$http.post(catalogActions,{
+                TYPE: 'section',
+                id: ''
+            })
+                .then(response => {
+                    this.rootSecitons = response.data;
+                    console.log(response);
+                    Service.loading(false);
+                })
+        },
         methods: {
             showBrendsAlphabet(){
                 if(this.brandsAlphabet.length==0){
-                    this.loading = true;
+                    Service.loading(true);
                     this.brandsList = [];
                     this.catalog = [];
                     this.$http.post('/ajax/catalog.php',{
@@ -162,12 +177,12 @@
                     })
                     .then(response => {
                         this.brandsAlphabet = response.data;
-                        this.loading = false;
+                        Service.loading(false);
                     })
                 }
             },
             showBrendsList(id,alpha=''){
-                this.loading = true;
+                Service.loading(true);
                 this.brandsList = [];
                 if(alpha=='') this.brandsAlphabet = [];
                 this.catalog = [];
@@ -178,11 +193,11 @@
                 })
                     .then(response => {
                         this.brandsList = response.data;
-                        this.loading = false;
+                        Service.loading(false);
                     })
             },
             showCatalog(brand){
-                this.loading = true;
+                Service.loading(true);
                 this.catalog = [];
 
                 this.$http.post(catalogActions,{
@@ -196,7 +211,7 @@
                 })
                     .then(response => {
                         this.catalog = response.data.ITEMS;
-                        this.loading = false;
+                        Service.loading(false);
                     })
             },
             showDetail(id){
@@ -213,15 +228,6 @@
             addToBasket(item){
                 Service.addToBasket(item);
             }
-        },
-        created(){
-            this.$http.post(catalogActions,{
-                TYPE: 'section',
-                id: ''
-            })
-                .then(response => {
-                    this.rootSecitons = response.data;
-                })
         }
     }
 </script>

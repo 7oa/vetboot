@@ -1,5 +1,7 @@
 <template>
     <div class="page-wrapper">
+        <loading :show="showLoading">
+        </loading>
         <b-container class="page-body">
             <div class="header">
 
@@ -34,12 +36,22 @@
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-      }
-    },
-    components:{
+    import Service from './service.js'
+    import Loading from './components/Loading.vue'
+
+    export default {
+        data () {
+          return {
+              showLoading: false
+          }
+        },
+        components: {
+            Loading
+        },
+        created(){
+            Service.$watch("showLoading",()=>{
+                this.showLoading = Service.showLoading;
+            });
+        }
     }
-  }
 </script>

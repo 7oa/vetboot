@@ -17,10 +17,18 @@
                     <tr v-for="basketItem in basket">
                         <td>{{basketItem.NAME}}</td>
                         <td>{{basketItem.PRICE}}</td>
-                        <td>{{basketItem.QUANTITY}}</td>
+                        <td>
+                            <b-form-input
+                                    type="number"
+                                    step="1" min="0"
+                                    class="basket-input"
+                                    :value="basketItem.QUANTITY"
+                            >
+                            </b-form-input>
+                        </td>
                         <td>{{basketItem.FULL_PRICE}}</td>
                         <td>
-                            <b-button>
+                            <b-button size="sm" @click="removeFromBasket(basketItem.ID)">
                                 <i class="material-icons">delete</i>
                             </b-button>
                         </td>
@@ -43,10 +51,18 @@
 
         },
         created(){
-            this.basket = Service.basket;
+            Service.$watch("basket",()=>{
+                this.basket = Service.basket;
+            });
+
             Service.$on("addToBasket",(basket)=>{
                this.basket = basket;
             });
+        },
+        methods: {
+            removeFromBasket(itemID){
+                Service.removeFromBasket(itemID);
+            }
         }
     }
 </script>

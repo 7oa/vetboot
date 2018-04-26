@@ -29,8 +29,7 @@
             </b-form>
         </div>
 
-        <div class="loading" v-if="loading"></div>
-        <div v-if="!loading&&!orders.orders">Выберите период.</div>
+        <div v-if="!orders.orders">Выберите период.</div>
         <div v-if="orders.orders&&orders.count>0">
 
             <table class="table table-bordered allTable">
@@ -57,13 +56,12 @@
                 </tr>
             </table>
         </div>
-        <div v-if="(orders.count==0)&&!loading">Нет заказов за выбранный период</div>
+        <div v-if="(orders.count==0)">Нет заказов за выбранный период</div>
 
         <!--detail card-->
         <b-modal ref="detailOrders" size="lg" hide-footer>
             <div slot="modal-title">Заказ №{{detailOrder.number}}</div>
-            <div class="loading" v-if="!detailOrder"></div>
-            <div class="d-block" v-else>
+            <div class="d-block" v-if="detailOrder">
                 <div class="d-flex justify-content-end">
                     <b-button-group>
 
@@ -140,6 +138,7 @@
 
 <script>
     import Datepicker from 'vuejs-datepicker';
+    import Service from '../../service.js'
 
     let now = new Date();
     let monthAgo = new Date(new Date().setMonth(now.getMonth() - 30));
@@ -148,7 +147,6 @@
     export default {
         data () {
             return {
-                loading: false,
                 loadingDoc: false,
                 dateFrom: monthAgo,
                 dateTo: now,
@@ -164,7 +162,7 @@
         methods: {
             showOrders(){
                 this.orders = false;
-                this.loading = true;
+                Service.loading(true);
                 this.$http.post(orderActions,{
                     TYPE: 'list',
                     dfrom: this.dateFrom,
@@ -172,7 +170,7 @@
                 })
                     .then(response => {
                         this.orders = response.data;
-                        this.loading = false;
+                        Service.loading(false);
                     })
             },
             showDetail(order){
