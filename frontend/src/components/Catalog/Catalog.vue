@@ -55,23 +55,34 @@
                 </div>
 
 
-
+                <table>
+                    <tr v-for="(item,key) in catalog">
+                        <td>
+                            {{item.name}}
+                        </td>
+                        <td>
+                            {{item.inbasket}}
+                        </td>
+                        <div @click="--item.inbasket">-</div>
+                        <div @click="++item.inbasket">+</div>
+                    </tr>
+                </table>
                 <b-table v-if="catalog.length>0" striped bordered outlined small :items="catalog" :fields="fields">
                     <template slot="name" slot-scope="data">
                         <img :src="data.item.img_path" v-if="data.item.img_path" class="catalog-img" />
                         <div class="catalog-item-ttl text-info" @click="showDetail(data.item.id)">{{data.item.name}}</div>
-                        <small>Код: {{data.item.art}}</small>
+                        <small>Код: {{data.item.key}} - {{data.item.inbasket}} - {{data.item.art}}</small>
                     </template>
                     <template slot="order" slot-scope="data">
                         <b-input-group size="sm">
                             <b-form-input
                                     type="number"
                                     min="0" step="1"
-                                    :value="data.item.quantity">
+                                    :value="data.item.inbasket">
 
                             </b-form-input>
                             <b-input-group-append>
-                                <b-btn variant="info" @click="addToBasket(data.item)">
+                                <b-btn variant="info" @click="addToBasket(data.item,data.item.inbasket)">
                                     <i class="material-icons">shopping_cart</i>
                                 </b-btn>
                             </b-input-group-append>
@@ -83,7 +94,7 @@
                 <!--detail card-->
                 <b-modal ref="detailItem" hide-footer title="Карточка товара">
 
-                    <div class="d-block" v-if="detail.length>0">
+                    <div class="d-block" v-if="detail.length!=0">
                         <h4>{{detail.name}}</h4>
                         <img v-if="detail.img" :src="detail.img">
                         <div class="catalog-detail__description">
@@ -161,7 +172,6 @@
             })
                 .then(response => {
                     this.rootSecitons = response.data;
-                    console.log(response);
                     Service.loading(false);
                 })
         },
@@ -212,6 +222,7 @@
                     .then(response => {
                         this.catalog = response.data.ITEMS;
                         Service.loading(false);
+                        console.log(response);
                     })
             },
             showDetail(id){
@@ -225,7 +236,9 @@
                         this.detail = response.data;
                     })
             },
-            addToBasket(item){
+            addToBasket(item,q){
+                console.log(item);
+                console.log(q);
                 Service.addToBasket(item);
             }
         }

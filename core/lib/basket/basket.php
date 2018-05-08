@@ -174,7 +174,7 @@ class Basket extends DataManager {
 
     public static function update($primaty, $data, $item = array(), $needRecalc = false, $returnData = false) {
         if ($needRecalc)
-            $data['QUANTITY']+=$item['QUANTITY'];
+            $data['QUANTITY']=$item['QUANTITY'];
 
         $price = static::getActualPriceNew($data['PRODUCT_ID']);
         $data['PRICE'] = $price['price'];

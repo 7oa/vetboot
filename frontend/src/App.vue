@@ -7,7 +7,7 @@
 
                 <b-navbar toggleable="md" type="dark" variant="info">
                     <div>
-                        <b-navbar-brand href="#">Vetkom&Vue</b-navbar-brand>
+                        <b-navbar-brand href="/">Vetkom&Vue</b-navbar-brand>
                     </div>
 
                     <div>

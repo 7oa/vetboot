@@ -14,7 +14,7 @@
                 </thead>
 
                 <tbody>
-                    <tr v-for="basketItem in basket">
+                    <tr v-for="(basketItem, index) in basket">
                         <td>{{basketItem.NAME}}</td>
                         <td>{{basketItem.PRICE}}</td>
                         <td>
@@ -28,7 +28,7 @@
                         </td>
                         <td>{{basketItem.FULL_PRICE}}</td>
                         <td>
-                            <b-button size="sm" @click="removeFromBasket(basketItem.ID)">
+                            <b-button size="xs" @click="removeFromBasket(basketItem.ID,index)">
                                 <i class="material-icons">delete</i>
                             </b-button>
                         </td>
@@ -41,27 +41,45 @@
 
 <script>
     import Service from '../../service.js'
+
+    const basketActions = '/ajax/basketActions.php';
+
     export default {
         data () {
             return {
                 basket: []
             }
         },
-        components:{
-
-        },
         created(){
-            Service.$watch("basket",()=>{
-                this.basket = Service.basket;
+            Service.loading(true);
+            this.$http.post(basketActions,{
+                TYPE: 'show'
+            })
+            .then(response => {
+                this.basket = response.data;
+                Service.setBasket(response.data);
+                Service.loading(false);
             });
 
             Service.$on("addToBasket",(basket)=>{
-               this.basket = basket;
+                this.basket = basket;
             });
         },
+        watch:{
+
+        },
         methods: {
-            removeFromBasket(itemID){
-                Service.removeFromBasket(itemID);
+            removeFromBasket(itemID,index){
+                Service.loading(true);
+                this.$http.post(basketActions,{
+                    TYPE: 'delete',
+                    id: itemID
+                })
+                .then(response => {
+                    this.$delete(this.basket, index);
+                    Service.setBasket(this.basket);
+                    Service.loading(false);
+                })
             }
         }
     }

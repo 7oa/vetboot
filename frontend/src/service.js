@@ -10,42 +10,28 @@ export default new Vue({
         basket: [],
         showLoading: false
     },
-    created(){
-        this.$http.post(basketActions,{
-            TYPE: 'show'
-        })
-        .then(response => {
-            this.basket = response.data;
-            console.log(response);
-        })
-    },
     methods:{
         loading(params){
             this.showLoading = params;
         },
+        setBasket(basket){
+            this.basket = basket;
+            console.log(this.basket);
+        },
         addToBasket(item){
-            console.log(item.price);
+            console.log(item.inbasket);
             this.$http.post(basketActions,{
                 TYPE: 'add',
                 id: item.id,
-                cnt: '1',
+                cnt: item.inbasket,
                 name: item.name,
                 price: item.price,
                 art: item.art
             })
             .then(response => {
-                console.log(response);
                 this.$emit("addToBasket",response.data);
+                console.log(response);
             })
-        },
-        removeFromBasket(itemID){
-            this.$http.post(basketActions,{
-                TYPE: 'delete',
-                id: itemID
-            })
-                .then(response => {
-                    this.$emit("removeFromBasket");
-                })
         }
     }
 });

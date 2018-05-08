@@ -32,7 +32,7 @@ switch ($data['TYPE']) {
         echo json_encode($arBasket);
         break;
     case 'update':
-        $result = Basket::update($_POST["basketid"], $product);
+        $result = Basket::update($data["basketid"], $product);
         $basket = Basket::getInstance(false);
         echo $basket->getPrice();
         break;
@@ -41,7 +41,7 @@ switch ($data['TYPE']) {
         echo json_encode($result);
         break;
     case 'delete':
-        Basket::delete($_POST["id"]);
+        Basket::delete($data["id"]);
         break;
     case 'refresh':
         $basket = Basket::getInstance(false);

@@ -5,6 +5,7 @@ include $_SERVER['DOCUMENT_ROOT'] . '/core/loader/prolog_before.php';
 use Core\Main\User,
   Core\Main\DataBase,
   Core\Main\Catalog,
+  Core\Main\Basket,
   Core\Main\Template;
 
 //$data             = $_POST;
@@ -18,6 +19,7 @@ $agreement        = $arUser["AGREEMENT"];
 $USER_EXTERNAL_ID = $arUser["EXTERNAL"];
 $type             = $data['TYPE'];
 $catalog          = Catalog::getInstance();
+$basket           = Basket::getInstance(false);
 $byID             = ['id' => $data["id"], 'price_id' => $price_id];
 
 switch ($data['TYPE']) {
@@ -45,6 +47,7 @@ switch ($data['TYPE']) {
     $products['ID']        = $data["id"];
     $products['DEF_PRICE'] = $def_price;
     $products['CHECKED']   = $data['checked'];
+    $arBasket = $basket->getBasketItems();
     if($products["COUNT"]>0){
         if($products["ITEMS"]){
             foreach ($products["ITEMS"] as $key => &$oneProduct) {
@@ -56,6 +59,10 @@ switch ($data['TYPE']) {
                     $ext = $oneProduct["img_mini_ext"];
                     $oneProduct["img_path"] = $catalog->checkPrevImage($img_id, $img, 'jpg');
                     unset($oneProduct['img_mini']);
+                }
+                $oneProduct['inbasket'] = 0;
+                foreach ($arBasket as $k => $basketItem) {
+                    if($oneProduct['id'] == $k) $oneProduct['inbasket'] = $basketItem['QUANTITY'];
                 }
             }
         }
